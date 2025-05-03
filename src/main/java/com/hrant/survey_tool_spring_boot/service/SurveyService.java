@@ -39,6 +39,10 @@ public class SurveyService {
         return surveyRepository.findById(id);
     }
 
+    public List<Survey> getAllSurveys() {
+        return surveyRepository.findAll();
+    }
+
     public void submitResponses(Long surveyId, List<ResponseDTO> responseDTOs) {
         Survey survey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new RuntimeException("Survey not found"));

@@ -30,6 +30,11 @@ public class SurveyController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("")
+    public ResponseEntity<List<Survey>> getAllSurveys() {
+        return ResponseEntity.ok(surveyService.getAllSurveys());
+    }
+
     @PostMapping("/{id}/responses")
     public ResponseEntity<Void> submitResponse(@PathVariable Long id, @RequestBody List<ResponseDTO> responseDTOs) {
         surveyService.submitResponses(id, responseDTOs);
