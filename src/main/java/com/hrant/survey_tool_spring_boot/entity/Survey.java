@@ -1,6 +1,5 @@
 package com.hrant.survey_tool_spring_boot.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -15,7 +14,6 @@ public class Survey {
     private String title;
 
     @OneToMany(mappedBy = "survey", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonManagedReference
     private Set<Question> questions = new HashSet<>();
 
     public Long getId() {

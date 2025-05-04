@@ -2,7 +2,7 @@ package com.hrant.survey_tool_spring_boot.controller;
 
 import com.hrant.survey_tool_spring_boot.dto.QuestionResultDTO;
 import com.hrant.survey_tool_spring_boot.dto.ResponseDTO;
-import com.hrant.survey_tool_spring_boot.entity.Survey;
+import com.hrant.survey_tool_spring_boot.dto.SurveyDTO;
 import com.hrant.survey_tool_spring_boot.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,14 +24,14 @@ public class SurveyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Survey> getSurveyById(@PathVariable Long id) {
+    public ResponseEntity<SurveyDTO> getSurveyById(@PathVariable Long id) {
         return surveyService.getSurveyById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Survey>> getAllSurveys() {
+    public ResponseEntity<List<SurveyDTO>> getAllSurveys() {
         return ResponseEntity.ok(surveyService.getAllSurveys());
     }
 

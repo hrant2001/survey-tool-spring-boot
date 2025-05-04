@@ -1,6 +1,6 @@
 package com.hrant.survey_tool_spring_boot.controller;
 
-import com.hrant.survey_tool_spring_boot.entity.Rating;
+import com.hrant.survey_tool_spring_boot.dto.RatingDTO;
 import com.hrant.survey_tool_spring_boot.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,7 @@ public class RatingController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Rating>> getAllRatings() {
+    public ResponseEntity<List<RatingDTO>> getAllRatings() {
         return ResponseEntity.ok(ratingService.getAllRatings());
     }
 }

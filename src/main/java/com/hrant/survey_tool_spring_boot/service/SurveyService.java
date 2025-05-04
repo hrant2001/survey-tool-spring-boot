@@ -1,7 +1,9 @@
 package com.hrant.survey_tool_spring_boot.service;
 
+import com.hrant.survey_tool_spring_boot.dto.QuestionDTO;
 import com.hrant.survey_tool_spring_boot.dto.QuestionResultDTO;
 import com.hrant.survey_tool_spring_boot.dto.ResponseDTO;
+import com.hrant.survey_tool_spring_boot.dto.SurveyDTO;
 import com.hrant.survey_tool_spring_boot.entity.*;
 import com.hrant.survey_tool_spring_boot.repository.QuestionRepository;
 import com.hrant.survey_tool_spring_boot.repository.RatingRepository;
@@ -31,12 +33,15 @@ public class SurveyService {
         this.responseRepository = responseRepository;
     }
 
-    public Optional<Survey> getSurveyById(Long id) {
-        return surveyRepository.findByIdWithQuestions(id);
+    public Optional<SurveyDTO> getSurveyById(Long id) {
+        return surveyRepository.findByIdWithQuestions(id)
+                .map(this::convertToSurveyDTO);
     }
 
-    public List<Survey> getAllSurveys() {
-        return surveyRepository.findAllWithQuestions();
+    public List<SurveyDTO> getAllSurveys() {
+        return surveyRepository.findAllWithQuestions().stream()
+                .map(this::convertToSurveyDTO)
+                .collect(Collectors.toList());
     }
 
     public void submitResponses(Long surveyId, List<ResponseDTO> responseDTOs) {
@@ -101,4 +106,15 @@ public class SurveyService {
         return resultDTOs;
     }
 
+    private SurveyDTO convertToSurveyDTO(Survey survey) {
+        SurveyDTO dto = new SurveyDTO();
+        dto.setId(survey.getId());
+        dto.setTitle(survey.getTitle());
+        dto.setQuestions(
+                survey.getQuestions().stream()
+                        .map(q -> new QuestionDTO(q.getId(), q.getText()))
+                        .collect(Collectors.toList())
+        );
+        return dto;
+    }
 }
