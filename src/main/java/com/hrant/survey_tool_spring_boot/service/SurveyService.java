@@ -9,6 +9,7 @@ import com.hrant.survey_tool_spring_boot.repository.QuestionRepository;
 import com.hrant.survey_tool_spring_boot.repository.RatingRepository;
 import com.hrant.survey_tool_spring_boot.repository.ResponseRepository;
 import com.hrant.survey_tool_spring_boot.repository.SurveyRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,7 @@ public class SurveyService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void submitResponses(Long surveyId, List<ResponseDTO> responseDTOs) {
         Survey survey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new RuntimeException("Survey not found"));
@@ -51,23 +53,38 @@ public class SurveyService {
         Response response = new Response();
         response.setSurvey(survey);
 
-        Set<Long> questionIds = responseDTOs.stream()
+        Map<Long, Question> questionMap = loadQuestionsByIds(responseDTOs);
+        Map<Long, Rating> ratingMap = loadRatingsByIds(responseDTOs);
+        List<Answer> answers = buildAnswers(responseDTOs, questionMap, ratingMap, response);
+
+        response.setAnswers(answers);
+        responseRepository.save(response);
+    }
+
+    private Map<Long, Question> loadQuestionsByIds(List<ResponseDTO> responseDTOs) {
+        Set<Long> ids = responseDTOs.stream()
                 .map(ResponseDTO::getQuestionId)
                 .collect(Collectors.toSet());
 
-        Set<Long> ratingIds = responseDTOs.stream()
+        return questionRepository.findAllById(ids).stream()
+                .collect(Collectors.toMap(Question::getId, q -> q));
+    }
+
+    private Map<Long, Rating> loadRatingsByIds(List<ResponseDTO> responseDTOs) {
+        Set<Long> ids = responseDTOs.stream()
                 .map(ResponseDTO::getRatingId)
                 .collect(Collectors.toSet());
 
-        Map<Long, Question> questionMap = questionRepository.findAllById(questionIds).stream()
-                .collect(Collectors.toMap(Question::getId, q -> q));
-
-        Map<Long, Rating> ratingMap = ratingRepository.findAllById(ratingIds).stream()
+        return ratingRepository.findAllById(ids).stream()
                 .collect(Collectors.toMap(Rating::getId, r -> r));
+    }
 
+    private List<Answer> buildAnswers(List<ResponseDTO> dtos,
+                                      Map<Long, Question> questionMap,
+                                      Map<Long, Rating> ratingMap,
+                                      Response response) {
         List<Answer> answers = new ArrayList<>();
-
-        for (ResponseDTO dto : responseDTOs) {
+        for (ResponseDTO dto : dtos) {
             Question question = questionMap.get(dto.getQuestionId());
             Rating rating = ratingMap.get(dto.getRatingId());
 
@@ -80,9 +97,7 @@ public class SurveyService {
 
             answers.add(answer);
         }
-
-        response.setAnswers(answers);
-        responseRepository.save(response);
+        return answers;
     }
 
     public List<QuestionResultDTO> getSurveyResults(Long surveyId) {
