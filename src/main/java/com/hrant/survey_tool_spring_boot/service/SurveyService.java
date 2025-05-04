@@ -32,11 +32,11 @@ public class SurveyService {
     }
 
     public Optional<Survey> getSurveyById(Long id) {
-        return surveyRepository.findByIdWithQuestionsAndAnswers(id);
+        return surveyRepository.findByIdWithQuestions(id);
     }
 
     public List<Survey> getAllSurveys() {
-        return surveyRepository.findAllWithQuestionsAndAnswers();
+        return surveyRepository.findAllWithQuestions();
     }
 
     public void submitResponses(Long surveyId, List<ResponseDTO> responseDTOs) {
@@ -81,7 +81,7 @@ public class SurveyService {
     }
 
     public List<QuestionResultDTO> getSurveyResults(Long surveyId) {
-        Survey survey = surveyRepository.findById(surveyId)
+        Survey survey = surveyRepository.findByIdWithQuestions(surveyId)
                 .orElseThrow(() -> new RuntimeException("Survey not found"));
 
         List<QuestionResultDTO> resultDTOs = new ArrayList<>();

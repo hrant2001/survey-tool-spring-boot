@@ -17,18 +17,14 @@ public interface SurveyRepository extends JpaRepository<Survey, Long> {
             "questions.answers"
     })
     @Query("SELECT s FROM Survey s WHERE s.id = :id")
-    Optional<Survey> findByIdWithQuestionsAndAnswers(@Param("id") Long id);
+    Optional<Survey> findByIdWithQuestions(@Param("id") Long id);
 
     @EntityGraph(attributePaths = "questions")
     List<Survey> findAll();
 
     @EntityGraph(attributePaths = {
-            "questions",
-            "questions.answers",
-            "questions.answers.rating",
-            "questions.answers.response",
-            "questions.answers.response.survey"
+            "questions"
     })
     @Query("SELECT s FROM Survey s")
-    List<Survey> findAllWithQuestionsAndAnswers();
+    List<Survey> findAllWithQuestions();
 }

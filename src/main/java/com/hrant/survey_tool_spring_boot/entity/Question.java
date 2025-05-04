@@ -1,6 +1,7 @@
 package com.hrant.survey_tool_spring_boot.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Set;
@@ -18,6 +19,7 @@ public class Question {
     @JsonBackReference
     private Survey survey;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "question", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Set<Answer> answers;
 
